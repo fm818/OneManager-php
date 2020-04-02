@@ -45,7 +45,7 @@ $CommonEnv = [
     'disktag',
     'function_name', // used in heroku.
     'hideFunctionalityFile',
-    'language',
+    //'language',
     'passfile',
     'sitename',
     'theme',
@@ -62,7 +62,7 @@ $ShowedCommonEnv = [
     //'disktag',
     //'function_name', // used in heroku.
     'hideFunctionalityFile',
-    'language',
+    //'language',
     'passfile',
     'sitename',
     'theme',
@@ -113,8 +113,11 @@ function main($path)
     global $exts;
     global $constStr;
 
-    if (isset($_COOKIE['language'])) $constStr['language'] = $_COOKIE['language'];
-    if (!$constStr['language']) $constStr['language'] = getConfig('language');
+    if (in_array($_SERVER['firstacceptlanguage'], array_keys($constStr['languages']))) $constStr['language'] = $_SERVER['firstacceptlanguage'];
+    if (isset($_COOKIE['language'])&&$_COOKIE['language']!='') $constStr['language'] = $_COOKIE['language'];
+    //if (!$constStr['language']) $constStr['language'] = getConfig('language');
+    echo 'firstacceptlanguage:'.$_SERVER['firstacceptlanguage'].'
+    '.'lan:'.$constStr['language'];
     if ($constStr['language']=='') $constStr['language'] = 'en-us';
     $_SERVER['language'] = $constStr['language'];
     $_SERVER['PHP_SELF'] = path_format($_SERVER['base_path'] . $path);
@@ -957,18 +960,36 @@ function adminoperate($path)
     return $tmparr;
 }
 
+function splitfirst($str, $split)
+{
+    $len = strlen($split);
+    $pos = strpos($str, $split);
+    if ($pos===false) {
+        $tmp[0] = $str;
+        $tmp[1] = '';
+    } elseif ($pos>0) {
+        $tmp[0] = substr($str, 0, $pos);
+        $tmp[1] = substr($str, $pos+$len);
+    } else {
+        $tmp[0] = '';
+        $tmp[1] = substr($str, $len);
+    }
+    return $tmp;
+}
+
 function splitlast($str, $split)
 {
+    $len = strlen($split);
     $pos = strrpos($str, $split);
     if ($pos===false) {
         $tmp[0] = $str;
         $tmp[1] = '';
     } elseif ($pos>0) {
         $tmp[0] = substr($str, 0, $pos);
-        $tmp[1] = substr($str, $pos+1);
+        $tmp[1] = substr($str, $pos+$len);
     } else {
         $tmp[0] = '';
-        $tmp[1] = substr($str, 1);
+        $tmp[1] = substr($str, $len);
     }
     return $tmp;
 }
