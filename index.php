@@ -3,7 +3,7 @@ include 'vendor/autoload.php';
 include 'conststr.php';
 include 'common.php';
 
-//echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
+echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
 if (isset($_SERVER['USER'])&&$_SERVER['USER']==='qcloud') {
     include 'platform/scf.php';
 } elseif (isset($_SERVER['HEROKU_APP_DIR'])&&$_SERVER['HEROKU_APP_DIR']==='/app') {
