@@ -116,8 +116,8 @@ function main($path)
     if (in_array($_SERVER['firstacceptlanguage'], array_keys($constStr['languages']))) $constStr['language'] = $_SERVER['firstacceptlanguage'];
     if (isset($_COOKIE['language'])&&$_COOKIE['language']!='') $constStr['language'] = $_COOKIE['language'];
     //if (!$constStr['language']) $constStr['language'] = getConfig('language');
-    echo 'firstacceptlanguage:'.$_SERVER['firstacceptlanguage'].'
-    '.'lan:'.$constStr['language'];
+    /*echo 'firstacceptlanguage:'.$_SERVER['firstacceptlanguage'].'
+    '.'lan:'.$constStr['language'];*/
     if ($constStr['language']=='') $constStr['language'] = 'en-us';
     $_SERVER['language'] = $constStr['language'];
     $_SERVER['PHP_SELF'] = path_format($_SERVER['base_path'] . $path);
