@@ -28,6 +28,7 @@ function GetGlobalVariable($event)
 
 function GetPathSetting($event, $context)
 {
+    $_SERVER['firstacceptlanguage'] = strtolower(splitfirst(splitfirst($event['headers']['accept-language'],';')[0],',')[0]);
     $_SERVER['function_name'] = $context['function_name'];
     $_SERVER['namespace'] = $context['namespace'];
     $host_name = $event['headers']['host'];
