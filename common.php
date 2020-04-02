@@ -277,28 +277,7 @@ function main($path)
 function get_access_token($refresh_token)
 {
     if (getConfig('Drive_ver')=='shareurl') {
-
-//if (!$files) $files['body'] = $arr['body'];
-            //$files['returnhead'] = $arr['returnhead'];
-            //$files['cookie'] = $arr['returnhead']['Set-Cookie'];
-//return $files;
-
-            /*$files['get'] = curl_request(
-                "https://mfedu-my.sharepoint.com/personal/ysun_ac_stu_office_gy/_api/web/GetListUsingPath(DecodedUrl=@a1)/RenderListDataAsStream?@a1='%2Fpersonal%2Fysun_ac_stu_office_gy%2FDocuments'&RootFolder=%2Fpersonal%2Fysun_ac_stu_office_gy%2FDocuments%2F&TryNewExperienceSingle=TRUE",
-                '{"parameters":{"__metadata":{"type":"SP.RenderListDataParameters"},"RenderOptions":136967,"AllowMultipleValueFilterForTaxonomyFields":true,"AddRequiredFields":true}}',
-                ['Accept' => 'application/json;odata=verbose', 'Content-Type' => 'application/json;odata=verbose', 'origin' => 'https://mfedu-my.sharepoint.com', 'Cookie' => $arr['returnhead']['Set-Cookie']],
-                1);
-                $files['get']['body'] = json_decode($files['get']['body'], true);
-                $_SERVER['access_token'] = splitlast($files['get']['body']['ListSchema']['.driveAccessToken'],'=')[1];
-                $_SERVER['api_url'] = $files['get']['body']['ListSchema']['.driveUrl'].'/root';
-
-                $files = json_decode( curl_request( $_SERVER['api_url'].'?expand=children(select=name,size,file,folder,parentReference,lastModifiedDateTime,@microsoft.graph.downloadUrl,@content.downloadUrl)', false, ['Authorization' => 'Bearer ' . $_SERVER['access_token'], 'Accept' => 'application/json'] )['body'], true);
-                $files['children']['a']['file'] = $_SERVER['api_url'];
-                $files['children']['a']['name'] = $_SERVER['api_url'];
-*/
         $shareurl = getConfig('shareurl');
-        //$url = 'https://mfedu-my.sharepoint.com/:f:/g/personal/ysun_ac_stu_office_gy/EpDIBOaYyExHjfu-PJA46icB40X0FKVwmn_9UDJsRvu3Ug?e=XyRZxP';
-        //$url = 'https://2d2-my.sharepoint.com/:f:/g/personal/ysun_host_ac_cn/Ehy8pjSQSoZOtLDs4ZKPiGUBYFt26CjEwG6bw7W5vleNNQ?e=DLZcWF';
         $tmp1 = splitlast($shareurl, '/')[0];
         $account = splitlast($tmp1, '/')[1];
         $tmp1 = splitlast($shareurl, ':')[0];
@@ -314,8 +293,8 @@ function get_access_token($refresh_token)
         $_SERVER['api_url'] = $ret['ListSchema']['.driveUrl'].'/root';
         if (!$_SERVER['access_token']) {
             error_log($domain . "/personal/" . $account . "/_api/web/GetListUsingPath(DecodedUrl=@a1)/RenderListDataAsStream?@a1='" . urlencode("/personal/" . $account . "/Documents") . "'&RootFolder=" . urlencode("/personal/" . $account . "/Documents/") . "&TryNewExperienceSingle=TRUE");
-            error_log('failed to get access_token. response' . json_encode($ret));
-            throw new Exception($response['stat'].', failed to get access_token.'.$response['body']);
+            error_log('failed to get share access_token. response' . json_encode($ret));
+            throw new Exception($response['stat'].', failed to get share access_token.'.$response['body']);
         }
         error_log('Get access token:'.json_encode($ret, JSON_PRETTY_PRINT));
         savecache('access_token', $_SERVER['access_token']);
@@ -365,14 +344,12 @@ function isHideFile($name)
 
 function getcache($str)
 {
-    //$cache = null;
     $cache = new \Doctrine\Common\Cache\FilesystemCache(sys_get_temp_dir(), __DIR__.'/Onedrive/'.$_SERVER['disktag']);
     return $cache->fetch($str);
 }
 
 function savecache($key, $value, $exp = 1800)
 {
-    //$cache = null;
     $cache = new \Doctrine\Common\Cache\FilesystemCache(sys_get_temp_dir(), __DIR__.'/Onedrive/'.$_SERVER['disktag']);
     $cache->save($key, $value, $exp);
 }
@@ -437,8 +414,6 @@ function get_siteid($access_token)
     while ($url!=''&&$response['stat']!=200&&$i<4) {
         $response = curl_request($url, false, ['Authorization' => 'Bearer ' . $access_token]);
         $i++;
-        //echo 'https://graph.microsoft.com/v1.0/sites/root:/sites/'.getConfig('sharepointname').$response['stat'].$response['body'].'
-        //';
     }
     if ($response['stat']!=200) {
         error_log('failed to get siteid. response' . json_encode($response));
@@ -508,7 +483,9 @@ function equal_replace($str, $add = false)
 
 function is_guestup_path($path)
 {
-    if (path_format('/'.path_format(urldecode($_SERVER['list_path'].path_format($path))).'/')==path_format('/'.path_format(getConfig('guestup_path')).'/')&&getConfig('guestup_path')!='') return 1;
+    $a1 = path_format(path_format(urldecode($_SERVER['list_path'].path_format($path))).'/')
+    $a2 = path_format(path_format(getConfig('guestup_path')).'/')
+    if (getConfig('guestup_path')!=''&&strtolower($a1)==strtolower($a2)) return 1;
     return 0;
 }
 
