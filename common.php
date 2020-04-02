@@ -1633,14 +1633,14 @@ function EnvOpt($needUpdate = 0)
 <a href="?AddDisk">'.getconstStr('AddDisk').'</a><br><br>';
     if (!((isset($_SERVER['USER'])&&$_SERVER['USER']==='qcloud')||(isset($_SERVER['HEROKU_APP_DIR'])&&$_SERVER['HEROKU_APP_DIR']==='/app'))) {
         $html .= '
-In VPS can not update by a click!<br>';
+'.getconstStr('VPSnotupdate').'<br>';
     } else {
         $html .= '
 <form name="updateform" action="" method="post">
     <input type="text" name="auth" placeholder="auth" value="qkqpttgf">
     <input type="text" name="project" placeholder="project" value="OneManager-php">
-    <button onclick="querybranchs();return false">查询分支</button>
-    <!--<input type="text" name="branch" placeholder="auth" value="master">-->
+    <button onclick="querybranchs();return false">'.getconstStr('QueryBranchs').'</button>
+    <!--<input type="text" name="branch" placeholder="branch" value="master">-->
     <select name="branch">
         <option value="master">master</option>
     </select>
